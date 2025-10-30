@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game Tracker</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="infoModal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn" id="closeModal">&times;</span>
+        <h2 class="modal-title">Game Information</h2>
+
+        <div class="info-box">
+          <label>Game Title:</label>
+          <p class="modalTitle">—</p>
+        </div>
+
+        <div class="info-box">
+          <label>Genre:</label>
+          <p class="modalGenre">—</p>
+        </div>
+
+        <div class="info-box">
+          <label>Platform:</label>
+          <p class="modalPlatform">—</p>
+        </div>
+
+        <div class="info-box">
+          <label>Release Year:</label>
+          <p class="modalReleaseYear">—</p>
+        </div>
+
+        <div class="info-box">
+          <label>Rating:</label>
+          <p class="modalRating">—</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-container">
+      <div class="game-form">
+        <h2>Add Game</h2>
+        <form class="gameForm" onsubmit="event.preventDefault()">
+          <label for="title">Title</label>
+          <input type="text" class="title" name="title" required />
+
+          <label for="genre">Genre</label>
+          <input type="text" class="genre" name="genre" required />
+
+          <label for="platform">Platform</label>
+          <input type="text" class="platform" name="platform" required />
+
+          <label for="releaseYear">Release Year</label>
+          <input
+            type="number"
+            class="releaseYear"
+            name="releaseYear"
+            required
+          />
+
+          <label for="rating">Rating</label>
+          <input type="number" max="10" min="0" class="rating" name="rating" />
+
+          <button type="submit" class="submit-btn">Save Game</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="list-container">
+      <div class="game-list">
+        <h2>Game Collection</h2>
+        <div class="games"></div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
