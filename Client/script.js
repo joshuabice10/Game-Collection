@@ -1,5 +1,7 @@
 "use strict";
 
+const url = "http://127.0.0.1:5000";
+
 const gamesList = document.querySelector(".games");
 const submitBtn = document.querySelector(".submit-btn");
 const modal = document.querySelector(".modal");
@@ -10,7 +12,7 @@ let editID = null;
 function load() {
   gamesList.innerHTML = "";
 
-  fetch("http://127.0.0.1:5000/games").then(function (response) {
+  fetch(`${url}/games`).then(function (response) {
     response.json().then(function (data) {
       console.log(data);
       data.forEach((game) => loadGames(game));
@@ -80,11 +82,11 @@ function addNewGame() {
   let submitBtnText = document.querySelector(".submit-btn").textContent;
   if (submitBtnText === "Save Edit") {
     submitMethod = "PUT";
-    apiUrl = `http://127.0.0.1:5000/games/${editID}`;
+    apiUrl = `${url}/games/${editID}`;
     document.querySelector(".submit-btn").textContent = "Save Game";
   } else {
     submitMethod = "POST";
-    apiUrl = "http://127.0.0.1:5000/games";
+    apiUrl = `${url}/games`;
   }
 
   fetch(apiUrl, {
@@ -102,7 +104,7 @@ function addNewGame() {
 
 function deleteGame(id) {
   console.log("You are going to delete game: ", id);
-  fetch(`http://127.0.0.1:5000/games/${id}`, {
+  fetch(`${url}/games/${id}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -147,7 +149,7 @@ function openModal(game) {
 }
 
 function handleGameItemClick(id) {
-  fetch(`http://127.0.0.1:5000/games/${id}`).then(function (response) {
+  fetch(`${url}/games/${id}`).then(function (response) {
     response.json().then(function (data) {
       console.log(data);
       openModal(data);
