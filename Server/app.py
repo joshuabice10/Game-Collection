@@ -1,6 +1,12 @@
 from flask import Flask
 from flask import request
-from gamesDB import gamesDB
+try:
+    # When running under gunicorn as a package (Server.app), use the package import
+    from Server.gamesDB import gamesDB
+except Exception:
+    # When running the module directly from the Server directory (python app.py),
+    # import the local module name
+    from gamesDB import gamesDB
 
 app = Flask(__name__)
 
@@ -83,7 +89,6 @@ def create_game():
         return "Could not create game", 404, {"Access-Control-Allow-Origin":"*"}
 
 
-def main():
-    app.run()
-
-main()
+if __name__ == "__main__":
+    # When running locally for development, bind to 0.0.0.0 so containers can reach it.
+    app.run(host="0.0.0.0", port=5000)
