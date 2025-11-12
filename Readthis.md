@@ -13,3 +13,8 @@ Recommend an init that adds a single entry?
 Otherwise, edit this file to communicate, or enable Discussions on Github.
 
 Thank you! -@DaveTheFave
+
+New update, now adding Kubernet support, you need to install microk8s on a linux machine.
+recommend `sudo snap install microk8s`
+
+Then look at the comments on the end of the .yaml file in k8s folder to run it. Have fun!

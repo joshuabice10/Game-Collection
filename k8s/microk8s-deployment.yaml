@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: game-collection
+  labels:
+    app: game-collection
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: game-collection
+  template:
+    metadata:
+      labels:
+        app: game-collection
+    spec:
+      containers:
+        - name: game-collection
+         
+          image: davethefave/beholdthehub:Game-Collection
+          ports:
+            - containerPort: 5000
+              name: api
+            - containerPort: 8000
+              name: ui
+          # Optional resources/limits - adjust if needed
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+            requests:
+              cpu: "100m"
+              memory: "64Mi"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: game-collection-svc
+spec:
+  type: NodePort
+  selector:
+    app: game-collection
+  ports:
+    - name: api
+      port: 5000
+      targetPort: 5000
+      # nodePort must be in the range 30000-32767. Choose any free port.
+      nodePort: 30050
+    - name: ui
+      port: 8000
+      targetPort: 8000
+      nodePort: 30080
+
+# Notes:
+# - To deploy:
+#      microk8s kubectl apply -f k8s/microk8s-deployment.yaml
+# - Access:
+#      API: http://<node-ip>:30050/games
+#      UI:  http://<node-ip>:30080/
+
+# Run 'microk8s kubectl get all' to see the deployed resources.
+# You can also run 'microk8s kubectl get svc' to see the node-ip you have.
