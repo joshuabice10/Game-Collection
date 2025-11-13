@@ -1,29 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: game-collection
+  name: game-collection-backend
   labels:
-    app: game-collection
+    app: game-collection-backend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: game-collection
+      app: game-collection-backend
   template:
     metadata:
       labels:
-        app: game-collection
+        app: game-collection-backend
     spec:
       containers:
-        - name: game-collection
-         
-          image: davethefave/beholdthehub:Game-Collection
+        - name: backend
+          image: davethefave/beholdthehub:game-collection-backend
           ports:
             - containerPort: 5000
               name: api
-            - containerPort: 8000
-              name: ui
-          # Optional resources/limits - adjust if needed
           resources:
             limits:
               cpu: "500m"
@@ -36,28 +32,97 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: game-collection-svc
+  name: game-collection-backend-svc
+  labels:
+    app: game-collection-backend
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
-    app: game-collection
+    app: game-collection-backend
   ports:
     - name: api
       port: 5000
       targetPort: 5000
-      # nodePort must be in the range 30000-32767. Choose any free port.
-      nodePort: 30050
-    - name: ui
-      port: 8000
-      targetPort: 8000
-      nodePort: 30080
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: game-collection-frontend
+  labels:
+    app: game-collection-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: game-collection-frontend
+  template:
+    metadata:
+      labels:
+        app: game-collection-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: davethefave/beholdthehub:game-collection-frontend
+          ports:
+            - containerPort: 80
+              name: http
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: game-collection-frontend-svc
+  labels:
+    app: game-collection-frontend
+spec:
+  type: ClusterIP
+  selector:
+    app: game-collection-frontend
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: game-collection-ingress
+  annotations:
+    kubernetes.io/ingress.class: "public"
+spec:
+  ingressClassName: public
+  rules:
+    - http:
+        paths:
+          - path: /games
+            pathType: Prefix
+            backend:
+              service:
+                name: game-collection-backend-svc
+                port:
+                  number: 5000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: game-collection-frontend-svc
+                port:
+                  number: 80
 
 # Notes:
-# - To deploy:
-#      microk8s kubectl apply -f k8s/microk8s-deployment.yaml
-# - Access:
-#      API: http://<node-ip>:30050/games
-#      UI:  http://<node-ip>:30080/
-
-# Run 'microk8s kubectl get all' to see the deployed resources.
-# You can also run 'microk8s kubectl get svc' to see the node-ip you have.
+# - This manifest creates two Deployments + Services (frontend and backend) and an Ingress
+#   that exposes the frontend at `/` and forwards `/games` requests to the backend.
+# - Backend replicas = 1 (the backend is stateful/SQLite-backed and should not be scaled horizontally)
+# - Frontend replicas = 2 (can scale independently)
+# - Replace `<DOCKERHUB_USERNAME>` in the Deployment image fields with your Docker Hub username
+#   (for example: `johndoe/game-collection-backend:latest`).
+# - For microk8s: enable an ingress controller before applying:
+#     microk8s enable ingress
+# - Apply the resources with:
+#     microk8s kubectl apply -f k8s/microk8s-deployment.yaml
+# - Check the ingress host/IP with:
+#     microk8s kubectl get ingress
+# - The frontend will be served on port 80 by the ingress; the client uses relative URLs
+#   so API calls will be sent to the same origin (`/games` -> routed to backend by the ingress).

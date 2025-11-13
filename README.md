@@ -108,3 +108,7 @@ Server: Python + Flask + SQLite.
 Client: Vanilla JavaScript, HTML, CSS (Ajax via fetch).
 
 ```
+
+# Running Kubernetes
+
+Alright I have it running on http://kuber2.laminanoctis.com. You need to alter your code to allow for it to actually work with the DB, but other than that, it's up.
