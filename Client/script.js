@@ -1,6 +1,6 @@
 "use strict";
 
-const url = "http://127.0.0.1:5000";
+const url = "http://kuber2.laminanoctis.com/";
 
 const gamesList = document.querySelector(".games");
 const submitBtn = document.querySelector(".submit-btn");
